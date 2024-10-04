@@ -10,6 +10,7 @@ import os
 import errno
 import subprocess
 import sys
+from security import safe_command
 
 if sys.version_info < (3, 0, 0):
     sys.stderr.write("You need python 3.0 or later to run this script\n")
@@ -490,7 +491,7 @@ def validate_shader(source, target):
     log('===')
 
     command = ['cgc', '-noentry', '-ogles']
-    p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = safe_command.run(subprocess.Popen, command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout_ret, stderr_ret = p.communicate(source.encode())
 
     log('CGC:', stderr_ret.decode())
@@ -513,7 +514,7 @@ def convert(source, dest):
     # Have to preprocess first to resolve #includes so we can hack potential vertex shaders.
     inc_dir = os.path.split(source)[0]
     vert_cmd_preprocess = ['cgc', '-E', '-I', '.' if inc_dir == '' else inc_dir, source]
-    p = subprocess.Popen(vert_cmd_preprocess, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    p = safe_command.run(subprocess.Popen, vert_cmd_preprocess, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     source_data, stderr_ret = p.communicate()
     log(stderr_ret.decode())
 
@@ -523,7 +524,7 @@ def convert(source, dest):
     source_data = preprocess_vertex(source_data.decode())
 
     vert_cmd = ['cgc', '-profile', 'glesv', '-entry', 'main_vertex', '-quiet']
-    p = subprocess.Popen(vert_cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    p = safe_command.run(subprocess.Popen, vert_cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     vertex_source, stderr_ret = p.communicate(input=source_data.encode())
     log(stderr_ret.decode())
     vertex_source = vertex_source.decode()
@@ -533,7 +534,7 @@ def convert(source, dest):
         return 1
 
     frag_cmd = ['cgc', '-profile', 'glesf', '-entry', 'main_fragment', '-quiet']
-    p = subprocess.Popen(frag_cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    p = safe_command.run(subprocess.Popen, frag_cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     fragment_source, stderr_ret = p.communicate(input=source_data.encode())
     log(stderr_ret.decode())
     fragment_source = fragment_source.decode()

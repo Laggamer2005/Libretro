@@ -25,6 +25,7 @@ import distutils.dir_util
 import os.path
 import subprocess
 import sys
+from security import safe_command
 
 KNOWN_GOOD_FILE = 'known_good.json'
 
@@ -47,7 +48,7 @@ def command_output(cmd, directory, fail_ok=False):
     """
     if VERBOSE:
         print('In {d}: {cmd}'.format(d=directory, cmd=cmd))
-    p = subprocess.Popen(cmd,
+    p = safe_command.run(subprocess.Popen, cmd,
                          cwd=directory,
                          stdout=subprocess.PIPE)
     (stdout, _) = p.communicate()
@@ -63,7 +64,7 @@ def command_retval(cmd, directory):
 
     Captures the standard error stream.
     """
-    p = subprocess.Popen(cmd,
+    p = safe_command.run(subprocess.Popen, cmd,
                          cwd=directory,
                          stdout=subprocess.PIPE)
     (stdout, _) = p.communicate()
