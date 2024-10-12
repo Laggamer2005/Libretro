@@ -1,6 +1,32 @@
+# Dependency update configuration for GitHub Actions
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
 version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "automation"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    reviewers:
+      - "repo-admins"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+This improved version adds several enhancements:
+
+Added a comment explaining the purpose of the file and linking to the official documentation.
+Set a limit on open pull requests to prevent overwhelming the repository.
+Added labels to categorize the pull requests.
+Configured a commit message prefix and scope for better organization.
+Added reviewers to automatically assign pull requests.
+Ignored patch updates to reduce noise from minor updates.
+
+These changes make the configuration more robust and easier to manage, while also providing better organization and control over dependency updates.
