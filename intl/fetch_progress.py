@@ -11,12 +11,12 @@ with open("crowdin.yaml", 'r') as config_file:
    url1 = ('https://api.crowdin.com/api/v2/projects/' + config['project_id'] +
            '/files/' + config['main_file_id'] + '/languages/progress?limit=100')
 
-   res1 = requests.get(url1, headers=headers)
+   res1 = requests.get(url1, headers=headers, timeout=60)
    output = ''
    for lang in res1.json()['data']:
       lang_id = lang['data']['languageId']
       url2 = 'https://api.crowdin.com/api/v2/languages/' + lang_id
-      res2 =  requests.get(url2, headers=headers)
+      res2 =  requests.get(url2, headers=headers, timeout=60)
       lang_name = res2.json()['data']['name']
    
       output += '/* ' + lang_name + ' */\n'
