@@ -5,6 +5,7 @@ import time
 import os
 import logging
 import platform
+from security import safe_command
 
 
 CTR_modifier = 1<<7
@@ -161,7 +162,7 @@ def launch_switchres(mode:mode, geom:geometry = geometry(), switchres_command:st
 		cmd.extend(['-c'])
 	cmd.extend(['-g', str(geom)])
 	logging.debug("Calling: {} with text: {}".format(" ".join(cmd), os.getenv('GRID_TEXT')))
-	return_status = subprocess.run(cmd, capture_output=True, text=True)
+	return_status = safe_command.run(subprocess.run, cmd, capture_output=True, text=True)
 	logging.debug(return_status.stdout)
 
 	default_crt_range = switchres_output_get_monitor_range(return_status.stdout)
